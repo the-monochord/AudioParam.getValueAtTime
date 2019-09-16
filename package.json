@@ -1,0 +1,63 @@
+{
+  "name": "audioparam-getvalueattime",
+  "version": "0.0.0-development",
+  "description": "This code monkey patches AudioParams with a method to get values at any time",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "rollup -c",
+    "build:watch": "npm run build -- --watch",
+    "lint": "eslint src --fix",
+    "stage-after-lint": "git add src",
+    "commit": "git-cz",
+    "commit:again": "git-cz --retry",
+    "semantic-release": "semantic-release",
+    "dist:clean": "rimraf dist || true",
+    "dist:stage": "git add dist --force"
+  },
+  "pre-commit": [
+    "lint",
+    "stage-after-lint",
+    "dist:clean",
+    "build",
+    "dist:stage"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/the-monochord/AudioParam.getValueAtTime.git"
+  },
+  "author": "Lajos Meszaros <m_lajos@hotmail.com>",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/the-monochord/AudioParam.getValueAtTime/issues"
+  },
+  "homepage": "https://github.com/the-monochord/AudioParam.getValueAtTime#readme",
+  "devDependencies": {
+    "@babel/core": "^7.6.0",
+    "@babel/preset-env": "^7.6.0",
+    "cz-conventional-changelog": "^3.0.2",
+    "eslint": "^6.4.0",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-node": "^10.0.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "pre-commit": "^1.2.2",
+    "rimraf": "^3.0.0",
+    "rollup": "^1.21.4",
+    "rollup-plugin-babel": "^4.3.3",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-ramda": "^1.0.5",
+    "rollup-plugin-terser": "^5.1.2",
+    "semantic-release": "^15.13.24"
+  },
+  "dependencies": {
+    "pseudo-audio-param": "^1.3.1",
+    "ramda": "^0.26.1"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}
