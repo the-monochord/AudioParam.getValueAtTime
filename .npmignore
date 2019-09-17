@@ -2,3 +2,4 @@
 .babelrc
 src/**/*
 rollup.config.js
+.travis.yml

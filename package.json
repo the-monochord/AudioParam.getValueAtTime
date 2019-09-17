@@ -2,7 +2,7 @@
   "name": "audioparam-getvalueattime",
   "version": "0.0.0-development",
   "description": "This code monkey patches AudioParams with a method to get values at any time",
-  "main": "src/index.js",
+  "main": "dist/audioparam-getvalueattime.min.js",
   "scripts": {
     "build": "rollup -c",
     "build:watch": "npm run build -- --watch",
