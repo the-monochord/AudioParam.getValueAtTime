@@ -1,12 +1,13 @@
 /* global BaseAudioContext, AudioContext, webkitAudioContext, AudioParam */
 
-import { isEmpty, prop, compose, not, clamp, isNil, reject, append, equals, lt, __, gte, either, filter, both, reduce, max, pluck, unless, find, propEq, min, gt, last, has, all, props, add } from 'ramda'
+import { isEmpty, prop, compose, complement, clamp, isNil, reject, append, equals, lt, __, gte, either, filter, both, reduce, max, pluck, unless, find, propEq, min, gt, last, has, all, props, add, length, head, without, sortBy } from 'ramda'
 import { getLinearRampToValueAtTime, getExponentialRampToValueAtTime, getTargetValueAtTime, getValueCurveAtTime } from 'pseudo-audio-param/lib/expr.js'
 
 const AudioContextClass = isNil(window.BaseAudioContext) ? (isNil(window.AudioContext) ? webkitAudioContext : AudioContext) : BaseAudioContext
 
 const maxAll = reduce(max, -Infinity)
 const minAll = reduce(min, Infinity)
+const isNotEmpty = complement(isEmpty)
 
 const findLastChangeBeforeTime = (scheduledChanges, time) => {
   const targetTimeOfLastChange = compose(
@@ -83,7 +84,7 @@ const scheduleChange = (audioParam, method, params, targetTime) => {
 
   audioParam._scheduledChanges = compose(
     unless(
-      () => method === 'cancelScheduledValues',
+      () => method === 'cancelScheduledValues' || method === 'cancelAndHoldAtTime',
       append({
         method,
         params,
@@ -98,12 +99,52 @@ const scheduleChange = (audioParam, method, params, targetTime) => {
       prop('targetTime')
     ))
   )(audioParam._scheduledChanges)
+
+  if (method === 'cancelAndHoldAtTime') {
+    const events = filter(compose(gte(__, targetTime), prop('targetTime')), audioParam._scheduledChanges)
+
+    if (!isEmpty(events)) {
+      let event
+      if (length(events) === 1) {
+        event = head(events)
+      } else {
+        event = compose(
+          head,
+          sortBy(prop('targetTime'))
+        )(events)
+      }
+
+      if (event.method !== 'setValueAtTime' && event.method !== 'setTargetAtTime') {
+        event.targetTime = targetTime
+        switch (event.method) {
+          case 'linearRampToValueAtTime':
+            event.params = [getLinearRampToValueAtTime(targetTime, audioParam._value, event.params[0], audioParam._valueWasLastSetAt, event.params[1]), targetTime]
+            break
+          case 'exponentialRampToValueAtTime':
+            event.params = [getExponentialRampToValueAtTime(targetTime, audioParam._value, event.params[0], audioParam._valueWasLastSetAt, event.params[1]), targetTime]
+            break
+          case 'setValueCurveAtTime': {
+            // const [values, startTime, duration] = event.params
+            const [values, startTime] = event.params
+            const newDuration = targetTime - startTime
+            const newValues = values // TODO
+            event.params = [newValues, startTime, newDuration]
+          }
+            break
+        }
+      }
+
+      audioParam._scheduledChanges = compose(
+        append(event),
+        without(events)
+      )(audioParam._scheduledChanges)
+    }
+  }
 }
 
 // gotChangesScheduled :: audioParam -> bool
 const gotChangesScheduled = compose(
-  not,
-  isEmpty,
+  isNotEmpty,
   prop('_scheduledChanges')
 )
 

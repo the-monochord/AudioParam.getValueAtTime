@@ -28,6 +28,10 @@ if (!isNil(window.AudioParam) && isNil(AudioParam.prototype.getValueAtTime)) {
   bindSchedulerToParamMethod('setTargetAtTime', [])
   bindSchedulerToParamMethod('setValueCurveAtTime', [1, 2])
 
+  if (!isNil(AudioParam.prototype.cancelAndHoldAtTime)) {
+    bindSchedulerToParamMethod('cancelAndHoldAtTime', [0])
+  }
+
   hijackParamValueSetter()
 
   AudioParam.prototype.getValueAtTime = function (time) {
