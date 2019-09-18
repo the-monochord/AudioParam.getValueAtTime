@@ -142,14 +142,14 @@ const scheduleChange = (audioParam, method, params, targetTime) => {
   }
 }
 
-// gotChangesScheduled :: audioParam -> bool
-const gotChangesScheduled = compose(
+// hasScheduledChanges :: audioParam -> bool
+const hasScheduledChanges = compose(
   isNotEmpty,
   prop('_scheduledChanges')
 )
 
 const getValueAtTime = (audioParam, time) => {
-  if (gotChangesScheduled(audioParam)) {
+  if (hasScheduledChanges(audioParam)) {
     return evaluateSchedulement(audioParam._scheduledChanges, audioParam._value, audioParam._valueWasLastSetAt, time)
   } else {
     return audioParam._value
@@ -207,7 +207,7 @@ const hijackParamValueSetter = () => {
   descriptor.set = function (newValue) {
     const audioParam = this
     // value change gets ignored in Firefox and Safari, if there are changes scheduled
-    if (!gotChangesScheduled(audioParam)) {
+    if (!hasScheduledChanges(audioParam)) {
       audioParam._value = clamp(audioParam.minValue, audioParam.maxValue, newValue)
       audioParam._valueWasLastSetAt = audioParam._ctx.currentTime
       originalSetter.call(audioParam, newValue)
@@ -218,7 +218,7 @@ const hijackParamValueSetter = () => {
 
 export {
   scheduleChange,
-  gotChangesScheduled,
+  hasScheduledChanges,
   getValueAtTime,
   bindContextToParams,
   bindSchedulerToParamMethod,

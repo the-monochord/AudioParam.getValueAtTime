@@ -5,7 +5,8 @@ import {
   getValueAtTime,
   bindContextToParams,
   bindSchedulerToParamMethod,
-  hijackParamValueSetter
+  hijackParamValueSetter,
+  hasScheduledChanges
 } from './helpers'
 
 if (!isNil(window.AudioParam) && isNil(AudioParam.prototype.getValueAtTime)) {
@@ -37,5 +38,10 @@ if (!isNil(window.AudioParam) && isNil(AudioParam.prototype.getValueAtTime)) {
   AudioParam.prototype.getValueAtTime = function (time) {
     const audioParam = this
     return getValueAtTime(audioParam, time)
+  }
+
+  AudioParam.prototype.hasScheduledChanges = function () {
+    const audioParam = this
+    return hasScheduledChanges(audioParam)
   }
 }
