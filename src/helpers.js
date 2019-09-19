@@ -1,6 +1,6 @@
 /* global BaseAudioContext, AudioContext, webkitAudioContext, AudioParam */
 
-import { isEmpty, prop, compose, complement, clamp, isNil, reject, append, equals, lt, __, gte, either, filter, both, reduce, max, pluck, unless, find, propEq, min, gt, last, has, all, props, add, length, head, without, sortBy } from 'ramda'
+import { isEmpty, prop, compose, complement, clamp, isNil, reject, append, equals, lt, __, gte, either, filter, both, reduce, max, pluck, unless, find, propEq, min, gt, last, has, all, props, add, length, head, without, sortBy, any } from 'ramda'
 import { getLinearRampToValueAtTime, getExponentialRampToValueAtTime, getTargetValueAtTime, getValueCurveAtTime } from 'pseudo-audio-param/lib/expr.js'
 
 const AudioContextClass = isNil(window.BaseAudioContext) ? (isNil(window.AudioContext) ? webkitAudioContext : AudioContext) : BaseAudioContext
@@ -148,6 +148,10 @@ const hasScheduledChanges = compose(
   prop('_scheduledChanges')
 )
 
+const hasScheduledChangesAtTime = (audioParam, time) => {
+  return any(compose(gt(__, time), prop('targetTime')), audioParam._scheduledChanges)
+}
+
 const getValueAtTime = (audioParam, time) => {
   if (hasScheduledChanges(audioParam)) {
     return evaluateSchedulement(audioParam._scheduledChanges, audioParam._value, audioParam._valueWasLastSetAt, time)
@@ -222,5 +226,6 @@ export {
   getValueAtTime,
   bindContextToParams,
   bindSchedulerToParamMethod,
-  hijackParamValueSetter
+  hijackParamValueSetter,
+  hasScheduledChangesAtTime
 }
