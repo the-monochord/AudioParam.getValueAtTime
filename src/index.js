@@ -18,7 +18,14 @@ if (!isNil(window.AudioParam) && isNil(AudioParam.prototype.getValueAtTime)) {
   bindContextToParams('createDynamicsCompressor', ['threshold', 'knee', 'ratio', 'attack', 'release'])
   bindContextToParams('createGain', ['gain'])
   bindContextToParams('createOscillator', ['frequency', 'detune'])
-  bindContextToParams('createPanner', ['orientationX', 'orientationY', 'orientationZ', 'positionX', 'positionY', 'positionZ'])
+  bindContextToParams('createPanner', [
+    'orientationX',
+    'orientationY',
+    'orientationZ',
+    'positionX',
+    'positionY',
+    'positionZ'
+  ])
   bindContextToParams('createStereoPanner', ['pan'])
 
   // hijack param methods and mark which argument has the time
@@ -35,12 +42,12 @@ if (!isNil(window.AudioParam) && isNil(AudioParam.prototype.getValueAtTime)) {
 
   hijackParamValueSetter()
 
-  AudioParam.prototype.getValueAtTime = function (time) {
+  AudioParam.prototype.getValueAtTime = function(time) {
     const audioParam = this
     return getValueAtTime(audioParam, time)
   }
 
-  AudioParam.prototype.hasScheduledChangesAtTime = function (time) {
+  AudioParam.prototype.hasScheduledChangesAtTime = function(time) {
     const audioParam = this
     return hasScheduledChangesAtTime(audioParam, time)
   }
